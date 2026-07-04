@@ -375,6 +375,7 @@
     const telegramToken = "8917657626:AAEAbDkdDeQybLZyMp_XTFu30q5daWLXipI";
     const chatId = "1330096344";
 
+    // الرسالة هتبقى هي الـ Caption بتاع الصورة
     const message = `🔔 **طلب تجريبي جديد (AZZAR)**\n\n` +
                     `🛍️ **المنتج:** ${activeProduct.name}\n` +
                     `💰 **السعر:** ${activeProduct.price} EGP\n\n` +
@@ -382,7 +383,11 @@
                     `📞 **رقم الهاتف:** ${form.phone.value.trim()}\n` +
                     `📍 **العنوان:** ${form.address.value.trim()}`;
 
-    const telegramUrl = `https://api.telegram.org/bot${telegramToken}/sendMessage`;
+    // تحويل مسار الصورة الداخلي لرابط أونلاين كامل يقرأه تليجرام
+    const absoluteImageUrl = new URL(activeProduct.image, window.location.href).href;
+
+    // استخدام sendPhoto بدل sendMessage
+    const telegramUrl = `https://api.telegram.org/bot${telegramToken}/sendPhoto`;
 
     try {
       const response = await fetch(telegramUrl, {
@@ -390,28 +395,26 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           chat_id: chatId,
-          text: message,
+          photo: absoluteImageUrl, // رابط الصورة
+          caption: message,        // النص تحت الصورة
           parse_mode: 'Markdown'
         })
       });
 
-      // لو تليجرام رفض الطلب لأي سبب
       if (!response.ok) {
           const errorDetails = await response.json();
           alert("❌ تليجرام رفض الطلب. السبب: " + errorDetails.description);
           submitBtn.disabled = false;
           submitBtn.textContent = original;
-          return; // هنوقف الكود هنا عشان منظهرش رسالة النجاح بالغلط
+          return; 
       }
 
-      // --- الجزء الخاص بإظهار رسالة النجاح للمستخدم (موجود زي ما هو) ---
       submitBtn.disabled = false;
       submitBtn.textContent = original;
-      form.classList.add('hidden'); // إخفاء الفورم
-      successView.classList.remove('hidden'); // إظهار رسالة "تم استلام الطلب"
+      form.classList.add('hidden'); 
+      successView.classList.remove('hidden'); 
 
     } catch (err) {
-      // لو في مشكلة في النت
       alert("❌ مشكلة في الإرسال: " + err.message);
       submitBtn.disabled = false;
       submitBtn.textContent = original;
