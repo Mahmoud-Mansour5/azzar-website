@@ -384,8 +384,7 @@
                     `📞 **رقم الهاتف:** ${form.phone.value.trim()}\n` +
                     `📍 **العنوان:** ${form.address.value.trim()}`;
 
-    const telegramUrl = `https://api.telegram.com/bot${telegramToken}/sendMessage`;
-
+    const telegramUrl = `https://api.telegram.org/bot${telegramToken}/sendMessage`;
     try {
       // 3. إرسال البيانات لتليجرام
       await fetch(telegramUrl, {
