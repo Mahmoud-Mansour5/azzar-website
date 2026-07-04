@@ -375,44 +375,55 @@
     const telegramToken = "8917657626:AAEAbDkdDeQybLZyMp_XTFu30q5daWLXipI";
     const chatId = "1330096344";
 
-    // الرسالة هتبقى هي الـ Caption بتاع الصورة
-    const message = `🔔 **طلب تجريبي جديد (AZZAR)**\n\n` +
-                    `🛍️ **المنتج:** ${activeProduct.name}\n` +
-                    `💰 **السعر:** ${activeProduct.price} EGP\n\n` +
-                    `👤 **الاسم:** ${form.fullName.value.trim()}\n` +
-                    `📞 **رقم الهاتف:** ${form.phone.value.trim()}\n` +
-                    `📍 **العنوان:** ${form.address.value.trim()}`;
+    // غيرنا النجوم ** لتاج الـ <b> بتاع الـ HTML عشان تمنع أي مشكلة
+    const message = `🔔 <b>طلب تجريبي جديد (AZZAR)</b>\n\n` +
+                    `🛍️ <b>المنتج:</b> ${activeProduct.name}\n` +
+                    `💰 <b>السعر:</b> ${activeProduct.price} EGP\n\n` +
+                    `👤 <b>الاسم:</b> ${form.fullName.value.trim()}\n` +
+                    `📞 <b>رقم الهاتف:</b> ${form.phone.value.trim()}\n` +
+                    `📍 <b>العنوان:</b> ${form.address.value.trim()}`;
 
-    // تحويل مسار الصورة الداخلي لرابط أونلاين كامل يقرأه تليجرام
     const absoluteImageUrl = new URL(activeProduct.image, window.location.href).href;
-
-    // استخدام sendPhoto بدل sendMessage
-    const telegramUrl = `https://api.telegram.org/bot${telegramToken}/sendPhoto`;
+    const photoUrl = `https://api.telegram.org/bot${telegramToken}/sendPhoto`;
+    const messageUrl = `https://api.telegram.org/bot${telegramToken}/sendMessage`;
 
     try {
-      const response = await fetch(telegramUrl, {
+      let response = await fetch(photoUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           chat_id: chatId,
-          photo: absoluteImageUrl, // رابط الصورة
-          caption: message,        // النص تحت الصورة
-          parse_mode: 'Markdown'
+          photo: absoluteImageUrl,
+          caption: message,
+          parse_mode: 'HTML' // غيرنا دي لـ HTML
         })
       });
 
       if (!response.ok) {
+          console.warn("الصورة غير متاحة، سيتم إرسال نص.");
+          response = await fetch(messageUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              chat_id: chatId,
+              text: message + `\n\n🔗 <a href="${absoluteImageUrl}">رابط مسار الصورة</a>`, // تعديل الرابط لـ HTML
+              parse_mode: 'HTML' // وهنا كمان لـ HTML
+            })
+          });
+      }
+
+      if (!response.ok) {
           const errorDetails = await response.json();
-          alert("❌ تليجرام رفض الطلب. السبب: " + errorDetails.description);
+          alert("❌ تليجرام رفض الطلب: " + errorDetails.description);
           submitBtn.disabled = false;
           submitBtn.textContent = original;
-          return; 
+          return;
       }
 
       submitBtn.disabled = false;
       submitBtn.textContent = original;
-      form.classList.add('hidden'); 
-      successView.classList.remove('hidden'); 
+      form.classList.add('hidden');
+      successView.classList.remove('hidden');
 
     } catch (err) {
       alert("❌ مشكلة في الإرسال: " + err.message);
