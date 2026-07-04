@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>AZZAR — Bags &amp; Accessories, Mansoura</title>
+<meta name="description" content="AZZAR — a curated edit of bags and accessories in Mansoura, Egypt. Handpicked pieces, cash on delivery.">
+<meta name="theme-color" content="#0B0A08">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="icon" href="assets/logo.png">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Jost:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0B0A08;
+    --panel:#15120C;
+    --panel-2:#1B1710;
+    --gold:#B08D45;
+    --gold-light:#E7CD8C;
+    --gold-dim:rgba(176,141,69,.35);
+    --wine:#6E2331;
+    --ivory:#F4EEE1;
+    --smoke:rgba(244,238,225,.56);
+    --smoke-dim:rgba(244,238,225,.34);
+    --line:rgba(231,205,140,.15);
+  }
+  *{-webkit-tap-highlight-color:transparent;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--ink);
+    color:var(--ivory);
+    font-family:'Jost',sans-serif;
+    overscroll-behavior-y:none;
+    -webkit-font-smoothing:antialiased;
+    padding-top:env(safe-area-inset-top);
+    padding-bottom:env(safe-area-inset-bottom);
+    position:relative;
+  }
+  body::before{
+    content:'';
+    position:fixed;inset:0;pointer-events:none;z-index:0;
+    background-image:repeating-linear-gradient(115deg, rgba(255,255,255,.012) 0px, rgba(255,255,255,.012) 1px, transparent 1px, transparent 3px);
+    opacity:.5;
+  }
+  .font-display{font-family:'Fraunces',serif;}
+  .tracking-widest2{letter-spacing:.26em;}
+  .tracking-widest3{letter-spacing:.14em;}
+
+  /* ---------- marquee ---------- */
+  .marquee-track{display:flex;width:max-content;animation:scrollX 26s linear infinite;}
+  @keyframes scrollX{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+
+  /* ---------- diamond motif (echoes the logo's gem) ---------- */
+  .diamond{width:6px;height:6px;background:var(--gold);display:inline-block;transform:rotate(45deg);}
+  .diamond-lg{width:10px;height:10px;background:linear-gradient(135deg,var(--gold-light),var(--gold));transform:rotate(45deg);}
+
+  /* ---------- seal / price ---------- */
+  .seal{
+    min-width:64px;height:64px;padding:0 6px;border-radius:9999px;
+    background:radial-gradient(circle at 32% 26%, var(--gold-light), var(--gold) 58%, #6b501f 100%);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    box-shadow:0 8px 20px rgba(0,0,0,.55), inset 0 0 0 3px rgba(11,10,8,.22);
+    border:1px solid rgba(0,0,0,.3);
+  }
+  .seal span.num{font-family:'Fraunces',serif;font-weight:600;font-size:17px;color:#1a1305;line-height:1;white-space:nowrap;}
+  .seal span.cur{font-size:8px;font-weight:600;letter-spacing:.08em;color:#1a1305;margin-top:1px;text-transform:uppercase;}
+
+  /* ---------- product cards ---------- */
+  .card{
+    background:linear-gradient(180deg, rgba(255,255,255,.028), rgba(255,255,255,.012));
+    border:1px solid var(--line);
+    transition:transform .4s cubic-bezier(.2,.7,.3,1), border-color .4s ease, box-shadow .4s ease;
+  }
+  .card:hover{transform:translateY(-5px);border-color:var(--gold-dim);box-shadow:0 18px 40px -18px rgba(176,141,69,.35);}
+  .card .img-wrap{overflow:hidden;}
+  .card .img-wrap img{transition:transform .7s cubic-bezier(.2,.7,.3,1);}
+  .card:hover .img-wrap img{transform:scale(1.06);}
+
+  .btn-primary{
+    background:var(--gold);
+    color:#171204;
+    font-weight:600;
+    transition:background .25s ease, transform .15s ease;
+  }
+  .btn-primary:hover{background:var(--gold-light);}
+  .btn-primary:active{transform:scale(.97);}
+  .btn-ghost{
+    border:1px solid var(--gold-dim);
+    color:var(--gold-light);
+    transition:border-color .25s ease, background .25s ease;
+  }
+  .btn-ghost:hover{border-color:var(--gold);background:rgba(176,141,69,.08);}
+
+  #order-modal{transition:opacity .25s ease;}
+  #order-sheet{transition:transform .35s cubic-bezier(.32,.72,0,1);}
+  input:focus, textarea:focus{outline:none;box-shadow:0 0 0 2px var(--gold);}
+  a:focus-visible, button:focus-visible{outline:2px solid var(--gold);outline-offset:2px;}
+  ::selection{background:var(--gold);color:#171204;}
+
+  /* ---------- reveal on scroll ---------- */
+  .reveal{opacity:0;transform:translateY(18px);transition:opacity .7s ease, transform .7s cubic-bezier(.2,.7,.3,1);}
+  .reveal.in-view{opacity:1;transform:translateY(0);}
+
+  /* ---------- hero watermark ---------- */
+  .watermark{
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    pointer-events:none; overflow:hidden;
+  }
+  .watermark img{width:520px;max-width:none;opacity:.05;filter:grayscale(1) brightness(2);}
+
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important; scroll-behavior:auto !important; animation:none !important;}
+    .reveal{opacity:1;transform:none;}
+  }
+</style>
+</head>
+<body class="min-h-screen">
+
+<!-- ===================== MARQUEE ===================== -->
+<div class="relative z-30 overflow-hidden border-b" style="border-color:var(--line); background:var(--panel);">
+  <div class="marquee-track py-2">
+    <span class="flex items-center gap-3 px-4 text-[10px] tracking-widest3 uppercase" style="color:var(--gold-light);">
+      <span>New Arrivals</span><span class="diamond"></span>
+      <span>Cash on Delivery</span><span class="diamond"></span>
+      <span>Delivery Across Mansoura</span><span class="diamond"></span>
+      <span>Limited Pieces</span><span class="diamond"></span>
+    </span>
+    <span class="flex items-center gap-3 px-4 text-[10px] tracking-widest3 uppercase" style="color:var(--gold-light);">
+      <span>New Arrivals</span><span class="diamond"></span>
+      <span>Cash on Delivery</span><span class="diamond"></span>
+      <span>Delivery Across Mansoura</span><span class="diamond"></span>
+      <span>Limited Pieces</span><span class="diamond"></span>
+    </span>
+  </div>
+</div>
+
+<!-- ===================== HEADER ===================== -->
+<header class="relative z-20 flex flex-col items-center justify-center text-center py-7 border-b" style="border-color:var(--line);">
+  <a href="#top" class="flex flex-col items-center gap-2">
+    <img src="assets/logo.png" alt="AZZAR" class="w-12 h-12 object-contain">
+    <span class="font-display text-2xl tracking-widest2 uppercase" style="color:var(--gold-light);">AZZAR</span>
+  </a>
+  <p class="text-[10px] tracking-widest3 uppercase text-white/40 mt-2">Bags &amp; Accessories · Mansoura</p>
+</header>
+
+<!-- ===================== HERO ===================== -->
+<section id="top" class="relative overflow-hidden">
+  <div class="watermark"><img src="assets/logo.png" alt=""></div>
+  <div class="absolute inset-0 opacity-[0.14]" style="background:radial-gradient(60% 50% at 50% 0%, var(--gold) 0%, transparent 70%);"></div>
+  <div class="max-w-md mx-auto px-6 pt-14 pb-12 text-center relative reveal">
+    <p class="text-[11px] tracking-widest3 uppercase mb-4" style="color:var(--smoke);">Azzar Atelier — Mansoura</p>
+    <h1 class="font-display text-[2.5rem] leading-[1.12] font-medium">
+      Style that speaks<br>
+      <span style="color:var(--gold-light);">before you do.</span>
+    </h1>
+    <p class="mt-5 text-[15px] leading-relaxed max-w-[300px] mx-auto" style="color:var(--smoke);">
+      A curated edit of bags and accessories for a woman who notices details — delivered to your door across Mansoura.
+    </p>
+    <div class="mt-8 flex flex-col items-center gap-4">
+      <a href="#shop" class="btn-primary w-full max-w-[280px] rounded-full py-4 text-[13px] tracking-widest3 uppercase text-center">View the Collection</a>
+      <div class="flex items-center gap-3 text-[10px] tracking-wide uppercase" style="color:var(--smoke-dim);">
+        <span>Cash on Delivery</span><span class="diamond"></span>
+        <span>Mansoura Delivery</span><span class="diamond"></span>
+        <span>Handpicked</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== PROMISE STRIP ===================== -->
+<section class="max-w-md mx-auto px-5 pb-2">
+  <div class="grid grid-cols-3 gap-3 reveal">
+    <div class="text-center px-1">
+      <svg class="mx-auto mb-2" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.4"><rect x="1" y="7" width="14" height="9" rx="1"/><path d="M15 10h4l3 3v3h-7"/><circle cx="6" cy="18" r="1.6"/><circle cx="17.5" cy="18" r="1.6"/></svg>
+      <p class="text-[10.5px] leading-snug" style="color:var(--smoke);">Pay on<br>delivery</p>
+    </div>
+    <div class="text-center px-1 border-x" style="border-color:var(--line);">
+      <svg class="mx-auto mb-2" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.4"><path d="M12 2 4 6v6c0 5 3.5 8.5 8 10 4.5-1.5 8-5 8-10V6l-8-4Z"/><path d="m9 12 2 2 4-4"/></svg>
+      <p class="text-[10.5px] leading-snug" style="color:var(--smoke);">Handpicked<br>pieces</p>
+    </div>
+    <div class="text-center px-1">
+      <svg class="mx-auto mb-2" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.4"><path d="M2 12h4l2-6 4 12 2-6h8"/></svg>
+      <p class="text-[10.5px] leading-snug" style="color:var(--smoke);">Fast local<br>delivery</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== PRODUCTS ===================== -->
+<section id="shop" class="max-w-md md:max-w-3xl mx-auto px-5 py-12">
+  <div class="text-center mb-9 reveal">
+    <p class="text-[11px] tracking-widest3 uppercase mb-2" style="color:var(--gold);">The Edit</p>
+    <h2 class="font-display text-2xl md:text-3xl">Six pieces, chosen with intent.</h2>
+  </div>
+
+  <div id="products-grid" class="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-5">
+    <!-- injected by JS -->
+  </div>
+</section>
+
+<!-- ===================== BRAND STATEMENT ===================== -->
+<section class="max-w-md mx-auto px-8 py-10 text-center reveal">
+  <span class="diamond-lg inline-block mb-5"></span>
+  <p class="font-display text-xl leading-relaxed" style="color:var(--ivory);">
+    "Every piece in this edit is chosen once — not mass-produced for a feed."
+  </p>
+  <p class="text-[11px] tracking-widest3 uppercase mt-4" style="color:var(--smoke-dim);">— Azzar</p>
+</section>
+
+<!-- ===================== FOOTER ===================== -->
+<footer class="max-w-md mx-auto px-6 py-10 text-center border-t" style="border-color:var(--line);">
+  <img src="assets/logo.png" alt="AZZAR" class="w-9 h-9 object-contain mx-auto mb-3">
+  <p class="font-display text-lg" style="color:var(--gold-light);">AZZAR</p>
+  <p class="text-white/30 text-[11px] mt-1 tracking-wide">Bags &amp; Accessories — Mansoura, Egypt</p>
+  <div class="flex justify-center gap-5 my-5 text-sm" style="color:var(--smoke);">
+    <a href="https://www.instagram.com/azzar.eg/" target="_blank" rel="noopener" class="hover:text-white transition-colors">Instagram</a>
+    <a href="#" class="hover:text-white transition-colors">WhatsApp</a>
+  </div>
+  <p class="text-white/25 text-[11px] tracking-wide">© <span id="year"></span> AZZAR. All rights reserved.</p>
+  <p class="text-white/30 text-[11px] tracking-widest3 uppercase mt-3">Powered by I.M Techno</p>
+</footer>
+
+<!-- ===================== ORDER MODAL ===================== -->
+<div id="order-modal" class="fixed inset-0 z-50 hidden opacity-0">
+  <div id="order-backdrop" class="absolute inset-0 bg-black/75"></div>
+  <div id="order-sheet" class="absolute bottom-0 left-0 right-0 translate-y-full sm:translate-y-0 sm:top-1/2 sm:-translate-y-1/2 sm:bottom-auto sm:mx-auto sm:max-w-sm rounded-t-3xl sm:rounded-3xl p-6 pb-8" style="background:var(--panel-2);border:1px solid var(--line);">
+    <div class="w-10 h-1 rounded-full bg-white/15 mx-auto mb-5 sm:hidden"></div>
+
+    <div class="flex items-center gap-3 mb-5">
+      <img id="modal-product-img" src="" alt="" class="w-14 h-16 object-cover rounded-lg border" style="border-color:var(--line);">
+      <div>
+        <p class="text-[10px] uppercase tracking-widest3" style="color:var(--smoke-dim);">Reserving</p>
+        <p id="modal-product-name" class="font-display text-lg leading-tight"></p>
+        <p id="modal-product-price" class="text-sm" style="color:var(--gold-light);"></p>
+      </div>
+    </div>
+
+    <form id="order-form" class="space-y-3">
+      <div>
+        <label class="text-xs mb-1 block" style="color:var(--smoke);">Full Name</label>
+        <input required name="fullName" type="text" placeholder="e.g. Mariam Ahmed"
+          class="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-sm placeholder-white/25">
+      </div>
+      <div>
+        <label class="text-xs mb-1 block" style="color:var(--smoke);">Mobile Number</label>
+        <input required name="phone" type="tel" inputmode="numeric" placeholder="01xxxxxxxxx"
+          class="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-sm placeholder-white/25">
+      </div>
+      <div>
+        <label class="text-xs mb-1 block" style="color:var(--smoke);">Delivery Address</label>
+        <textarea required name="address" rows="2" placeholder="Street, building number, city, governorate"
+          class="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-sm placeholder-white/25 resize-none"></textarea>
+      </div>
+
+      <button type="submit" id="order-submit-btn" class="btn-primary w-full rounded-full py-4 text-[13px] tracking-widest3 uppercase mt-2">
+        Confirm Order
+      </button>
+      <p class="text-center text-[10.5px] mt-1" style="color:var(--smoke-dim);">Cash on delivery — pay only when it arrives.</p>
+      <button type="button" id="order-cancel-btn" class="w-full text-center text-white/40 text-xs py-2">Cancel</button>
+    </form>
+
+    <div id="order-success" class="hidden text-center py-6">
+      <div class="seal mx-auto mb-4"><span class="num">✓</span></div>
+      <p class="font-display text-lg">Order Received</p>
+      <p class="text-sm mt-1" style="color:var(--smoke);">We'll call you shortly to confirm delivery.</p>
+      <button type="button" id="order-close-btn" class="btn-primary rounded-full px-6 py-3 text-xs tracking-widest3 uppercase mt-5">Done</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  // ---------------------------------------------------------------
+  // PRODUCT DATA
+  // Put your real photos in assets/products/ named 1.jpg through 6.jpg
+  // (matching the order below), then swap in your final names/prices.
+  // ---------------------------------------------------------------
+  const products = [
+    { id: '1', name: 'Golden Bracelet Set',    tag: 'Layered gold for a hand that never goes unnoticed.',  price: 180, image: 'assets/products/1.jpg' },
+    { id: '2', name: 'Classic Buckle Bag',     tag: 'Structured, timeless, effortless to carry.',          price: 250, image: 'assets/products/2.jpg' },
+    { id: '3', name: 'Croco-Leather Beige Bag',tag: 'Sculpted leather with a quiet edge.',                 price: 300, image: 'assets/products/3.jpg' },
+    { id: '4', name: 'Woven Black Tote',       tag: 'Texture that moves with you, day to night.',          price: 280, image: 'assets/products/4.jpg' },
+    { id: '5', name: 'Petite Handbag',         tag: 'Small in size, unmistakable in presence.',            price: 220, image: 'assets/products/5.jpg' },
+    { id: '6', name: 'Chocolate Bag Charm',    tag: 'The finishing touch every bag deserves.',             price: 90,  image: 'assets/products/6.jpg' },
+  ];
+
+  // n8n Webhook URL placeholder — replace with your live n8n
+  // "Webhook" node Production URL before publishing.
+  const N8N_WEBHOOK_URL = 'https://your-n8n-instance.example.com/webhook/azzar-orders';
+
+  const grid = document.getElementById('products-grid');
+
+  function renderProducts(list){
+    grid.innerHTML = '';
+    list.forEach((p, i) => {
+      const card = document.createElement('div');
+      card.className = 'card rounded-2xl overflow-hidden flex flex-col reveal';
+      card.innerHTML = `
+        <div class="relative img-wrap">
+          <img src="${p.image}" alt="${p.name}" class="w-full aspect-[4/5] object-cover" loading="lazy">
+          <span class="absolute top-2.5 left-2.5 font-display italic text-[11px] tracking-wide px-2 py-0.5 rounded-full" style="background:rgba(11,10,8,.55); color:var(--gold-light); backdrop-filter:blur(2px);">N° 0${i + 1}</span>
+          <span class="seal absolute -bottom-3 -right-2">
+            <span class="num">${p.price}</span>
+            <span class="cur">EGP</span>
+          </span>
+        </div>
+        <div class="p-3 pt-4 flex flex-col flex-1">
+          <p class="font-display text-[15px] leading-snug">${p.name}</p>
+          <p class="text-[11px] leading-snug mt-1 flex-1" style="color:var(--smoke-dim);">${p.tag}</p>
+          <button data-id="${p.id}" class="order-now-btn btn-primary mt-3 rounded-full py-2.5 text-[10.5px] tracking-widest3 uppercase">
+            Reserve This Piece
+          </button>
+        </div>
+      `;
+      grid.appendChild(card);
+    });
+    observeReveals();
+  }
+  renderProducts(products);
+
+  // ---------------- Order modal logic ----------------
+  const modal = document.getElementById('order-modal');
+  const sheet = document.getElementById('order-sheet');
+  const backdrop = document.getElementById('order-backdrop');
+  const form = document.getElementById('order-form');
+  const successView = document.getElementById('order-success');
+  const modalImg = document.getElementById('modal-product-img');
+  const modalName = document.getElementById('modal-product-name');
+  const modalPrice = document.getElementById('modal-product-price');
+  let activeProduct = null;
+
+  function openModal(product){
+    activeProduct = product;
+    modalImg.src = product.image;
+    modalImg.alt = product.name;
+    modalName.textContent = product.name;
+    modalPrice.textContent = product.price + ' EGP · Cash on Delivery';
+    form.reset();
+    form.classList.remove('hidden');
+    successView.classList.add('hidden');
+    modal.classList.remove('hidden');
+    requestAnimationFrame(() => {
+      modal.classList.remove('opacity-0');
+      sheet.classList.remove('translate-y-full');
+    });
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal(){
+    modal.classList.add('opacity-0');
+    sheet.classList.add('translate-y-full');
+    document.body.style.overflow = '';
+    setTimeout(() => modal.classList.add('hidden'), 300);
+  }
+
+  grid.addEventListener('click', (e) => {
+    const btn = e.target.closest('.order-now-btn');
+    if (!btn) return;
+    const product = products.find(p => p.id === btn.dataset.id);
+    if (product) openModal(product);
+  });
+
+  document.getElementById('order-cancel-btn').addEventListener('click', closeModal);
+  document.getElementById('order-close-btn').addEventListener('click', closeModal);
+  backdrop.addEventListener('click', closeModal);
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const submitBtn = document.getElementById('order-submit-btn');
+    const original = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'جاري الإرسال…';
+
+    // 1. ضع بيانات التليجرام الخاصة بك هنا
+    const telegramToken = "8917657626:AAEAbDkdDeQybLZyMp_XTFu30q5daWLXipI"; 
+    const chatId = "1330096344";
+
+    // 2. تجهيز نص الرسالة اللي هتوصلك
+    const message = `🔔 **طلب تجريبي جديد (AZZAR)**\n\n` +
+                    `🛍️ **المنتج:** ${activeProduct.name}\n` +
+                    `💰 **السعر:** ${activeProduct.price} EGP\n\n` +
+                    `👤 **الاسم:** ${form.fullName.value.trim()}\n` +
+                    `📞 **رقم الهاتف:** ${form.phone.value.trim()}\n` +
+                    `📍 **العنوان:** ${form.address.value.trim()}`;
+
+    const telegramUrl = `https://api.telegram.com/bot${telegramToken}/sendMessage`;
+
+    try {
+      // 3. إرسال البيانات لتليجرام
+      await fetch(telegramUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: chatId,
+          text: message,
+          parse_mode: 'Markdown'
+        })
+      });
+    } catch (err) {
+      console.error('Error sending to Telegram:', err);
+    } finally {
+      // 4. إظهار رسالة النجاح للعميل
+      submitBtn.disabled = false;
+      submitBtn.textContent = original;
+      form.classList.add('hidden');
+      successView.classList.remove('hidden');
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !modal.classList.contains('hidden')) closeModal();
+  });
+
+  // ---------------- Scroll reveal ----------------
+  function observeReveals(){
+    const els = document.querySelectorAll('.reveal:not(.in-view)');
+    if (!('IntersectionObserver' in window)) { els.forEach(el => el.classList.add('in-view')); return; }
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in-view');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    els.forEach(el => io.observe(el));
+  }
+  observeReveals();
+</script>
+</body>
+</html>
